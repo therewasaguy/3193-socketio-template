@@ -15,9 +15,46 @@
 
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.4/p5.min.js"></script>
-
+    <script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+    
 		<script>
 			var socket = io();
-		</script>
+
+      var myHue = Math.random() * 360;
+
+      socket.on('update users', function(data) {
+        $('#my-list').html('');
+        for (var i = 0; i < data.length; i++) {
+          $('#my-list').append('<li>' + data[i] + '</li>');
+        }
+      });
+      
+      socket.on('someone moved', function(msg) {
+        fill(msg.hue, 255, 255);
+        ellipse(msg.mouseX, msg.mouseY, 20, 20);
+      });
+      
+      function setup() {
+        createCanvas(400, 400);
+        colorMode(HSB);
+        background(0, 20, 200);
+        noStroke();
+      }
+      
+      function draw() {
+        background(0, 20, 200, 0.1);
+      }
+      
+      function mouseMoved() {
+        fill(myHue, 255, 255);
+        ellipse(mouseX, mouseY, 20, 20);
+        socket.emit('mouse move', {
+          mouseX: mouseX,
+          mouseY: mouseY,
+          hue: myHue
+        });
+      }
+    
+    </script>
 	</body>
 </html>
